@@ -156,24 +156,26 @@ LrFunctionContext.callWithContext('consoleDialog', function(context)
 
 		-- cancel
 		if verb == "cancel" then break end
-
-		-- exec
-		prefs.consoleText = prop.text
-		local func, msg = loadstring(prop.text)
-		if not func then
-			LrDialogs.message("failed", msg, "info" );
-			return
-		end
-
-		-- call the func async
-		LrTasks.startAsyncTask(function()
-			local status, ret = LrTasks.pcall(func)
-			if status then
-				LrDialogs.message( "result", tostring(ret), "info" );
-			else
-				LrDialogs.message( "error", ret, "warning" );
+		if verb == "ok" then
+			-- exec
+			prefs.consoleText = prop.text
+			local func, msg = loadstring(prop.text)
+			if not func then
+				LrDialogs.message("failed", msg, "info" );
+				return
 			end
-		end)
+
+			-- call the func async
+			LrTasks.startAsyncTask(function()
+				local status, ret = LrTasks.pcall(func)
+				if status then
+					LrDialogs.message( "result", tostring(ret), "info" );
+				else
+					LrDialogs.message( "error", ret, "warning" );
+				end
+			end)
+		end
+		verb = ""
 	end
 end)
 
